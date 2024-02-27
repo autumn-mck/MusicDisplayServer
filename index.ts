@@ -9,7 +9,8 @@ let lastPlayingData: PlayingData = {
     album: "",
     durationMs: 0,
     positionMs: "0",
-    playState: PlayState.Other
+    playState: PlayState.Offline,
+    timestamp: Date.now()
 }
 
 playingDataEmitter.on("update", (playingData: PlayingData) => {
@@ -27,7 +28,10 @@ Bun.serve({
 
         if (url.pathname === "/now-playing" && req.method === "POST") {
             // todo auth
+            
             const playingData = await req.json() as PlayingData;
+            playingData.timestamp = Date.now();
+
             updateNowPlaying(playingData);
             return new Response();
         }

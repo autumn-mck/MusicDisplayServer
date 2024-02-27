@@ -7,6 +7,8 @@ export interface PlayingData {
     playState: PlayState;
 
     albumArt?: string; // base64 encoded
+
+    timestamp: number;
 }
 
 export enum PlayState {
