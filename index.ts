@@ -1,34 +1,59 @@
+import { EventEmitter } from "node:events";
+import { PlayState, type PlayingData } from "./playingData";
+
+class PlayingDataEmitter extends EventEmitter { }
+const playingDataEmitter = new PlayingDataEmitter();
+let lastPlayingData: PlayingData = {
+    artist: "",
+    title: "",
+    album: "",
+    durationMs: 0,
+    positionMs: "0",
+    playState: PlayState.Other
+}
+
+playingDataEmitter.on("update", (playingData: PlayingData) => {
+    console.table({
+        ...playingData, 
+        playState: PlayState[playingData.playState],
+        albumArt: "base64 encoded"
+    });
+});
+
 Bun.serve({
     port: 3000,
     async fetch(req) {
-        const body = await req.json() as PlayingData;
+        const url = new URL(req.url);
 
-        console.table({
-            ...body, 
-            playState: PlayState[body.playState],
-            albumArt: "base64 encoded"
-        });
+        if (url.pathname === "/now-playing" && req.method === "POST") {
+            // todo auth
+            const playingData = await req.json() as PlayingData;
+            updateNowPlaying(playingData);
+            return new Response();
+        }
 
-        const buffer = Buffer.from(body.albumArt, "base64");
-        Bun.write("albumArt.jpg", buffer);
+        if (url.pathname === "/now-playing" && req.method === "GET") {
+            return new Response(JSON.stringify(lastPlayingData), {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });   
+        }
 
         return new Response();
     }
 });
 
-interface PlayingData {
-    artist: string;
-    title: string;
-    album: string;
-    durationMs: number;
-    positionMs: string;
-    playState: PlayState;
+function updateNowPlaying(playingData: PlayingData) {
+    if (playingData.albumArt) {
+        const buffer = Buffer.from(playingData.albumArt, "base64");
+        Bun.write("albumArt.jpg", buffer);
+    } else {
+        // todo placeholder image
+    }
 
-    albumArt: string; // base64 encoded
+    lastPlayingData = playingData;
+    playingDataEmitter.emit("update", playingData);
 }
 
-enum PlayState {
-    Playing,
-    Paused,
-    Other
-}
+console.log("Started!");
