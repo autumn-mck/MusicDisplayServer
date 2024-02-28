@@ -1,25 +1,28 @@
 import { EventEmitter } from "node:events";
 import { PlayState, type PlayingData } from "./playingData";
 
-class PlayingDataEmitter extends EventEmitter { }
+class PlayingDataEmitter extends EventEmitter {}
 const playingDataEmitter = new PlayingDataEmitter();
 let lastPlayingData: PlayingData = {
     artist: "",
     title: "",
     album: "",
     durationMs: 0,
-    positionMs: "0",
+    positionMs: 0,
     playState: PlayState.Offline,
-    timestamp: Date.now()
-}
+    timestamp: Date.now(),
+};
 
 playingDataEmitter.on("update", (playingData: PlayingData) => {
     console.table({
-        ...playingData, 
+        ...playingData,
         playState: PlayState[playingData.playState],
-        albumArt: "base64 encoded"
+        albumArt: "base64 encoded",
     });
 });
+
+// Read NoArtwork.png to base64 encode it
+const noArtwork = await Bun.file("NoArtworkBase64.txt").text();
 
 Bun.serve({
     port: 3000,
@@ -28,8 +31,8 @@ Bun.serve({
 
         if (url.pathname === "/now-playing" && req.method === "POST") {
             // todo auth
-            
-            const playingData = await req.json() as PlayingData;
+
+            const playingData = (await req.json()) as PlayingData;
             playingData.timestamp = Date.now();
 
             updateNowPlaying(playingData);
@@ -39,13 +42,16 @@ Bun.serve({
         if (url.pathname === "/now-playing" && req.method === "GET") {
             return new Response(JSON.stringify(lastPlayingData), {
                 headers: {
-                    "Content-Type": "application/json"
-                }
-            });   
+                    "Content-Type": "application/json",
+                },
+            });
         }
 
+        if (url.pathname === "/") return new Response(Bun.file("index.html"));
+        if (url.pathname === "/musicDisplayComponent.js") return new Response(Bun.file("musicDisplayComponent.js"));
+
         return new Response();
-    }
+    },
 });
 
 function updateNowPlaying(playingData: PlayingData) {
@@ -53,7 +59,8 @@ function updateNowPlaying(playingData: PlayingData) {
         const buffer = Buffer.from(playingData.albumArt, "base64");
         Bun.write("albumArt.jpg", buffer);
     } else {
-        // todo placeholder image
+        Bun.write("albumArt.jpg", Buffer.from(noArtwork, "base64"));
+        playingData.albumArt = noArtwork;
     }
 
     lastPlayingData = playingData;
