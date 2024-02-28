@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Home</title>
+	<head>
+		<title>Home</title>
 
-        <style>
-            :root {
-                --base: #1e2030;
-                --text: #cad3f5;
-                --accent: #ddb6f2;
-            }
+		<style>
+			:root {
+				--base: #1e2030;
+				--text: #cad3f5;
+				--accent: #ddb6f2;
+			}
 
-            body {
-                margin: 0;
-                padding: 0;
-                font-family: sans-serif;
-                color: var(--text);
-                background-color: #181926;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-            }
-        </style>
-    </head>
+			body {
+				margin: 0;
+				padding: 0;
+				font-family: sans-serif;
+				color: var(--text);
+				background-color: #181926;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+			}
+		</style>
+	</head>
 
-    <body>
-        <music-display></music-display>
+	<body>
+		<music-display nowPlayingApi="http://localhost:3000/now-playing" websocketUrl="ws://localhost:3000/now-playing-ws">
+		</music-display>
 
-        <script src="/musicDisplayComponent.js"></script>
-    </body>
+		<script src="/musicDisplayComponent.js"></script>
+	</body>
 </html>

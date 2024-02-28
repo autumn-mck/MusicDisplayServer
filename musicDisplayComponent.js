@@ -195,7 +195,7 @@ class MusicDisplay extends HTMLElement {
 	}
 
 	connectWebSocket() {
-		this.webSocket = new WebSocket("ws://localhost:3000/now-playing-ws");
+		this.webSocket = new WebSocket(this.getAttribute("websocketUrl"));
 
 		this.webSocket.onmessage = (event) => {
 			this.lastMessage = JSON.parse(event.data);
@@ -224,7 +224,7 @@ class MusicDisplay extends HTMLElement {
 	}
 
 	async fetchNowPlaying() {
-		const response = await fetch("http://localhost:3000/now-playing");
+		const response = await fetch(this.getAttribute("nowPlayingApi"));
 		const playingData = await response.json();
 		this.lastMessage = playingData;
 		this.fullUpdate(playingData);
