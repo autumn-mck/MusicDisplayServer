@@ -5,15 +5,6 @@ import config from "./config.json";
 
 class PlayingDataEmitter extends EventEmitter {}
 const playingDataEmitter = new PlayingDataEmitter();
-let lastPlayingData: PlayingData = {
-	artist: "",
-	title: "",
-	album: "",
-	durationMs: 0,
-	positionMs: 0,
-	playState: PlayState.Offline,
-	timestamp: Date.now(),
-};
 
 playingDataEmitter.on("update", (playingData: PlayingData) => {
 	console.table({
@@ -27,6 +18,19 @@ const auth = `Basic ${config.authToken}`;
 
 // Read NoArtwork.png to base64 encode it
 const noArtwork = await Bun.file("NoArtworkBase64.txt").text();
+
+const notPlayingData: PlayingData = {
+	title: "Currently offline",
+	artist: "",
+	album: "",
+	durationMs: 0,
+	positionMs: 0,
+	playState: PlayState.Offline,
+	timestamp: Date.now(),
+	albumArt: noArtwork,
+};
+
+let lastPlayingData: PlayingData = notPlayingData;
 
 Bun.serve({
 	port: 3000,
@@ -73,11 +77,11 @@ Bun.serve({
 });
 
 function updateNowPlaying(playingData: PlayingData) {
-	if (playingData.albumArt) {
-		const buffer = Buffer.from(playingData.albumArt, "base64");
-		Bun.write("albumArt.jpg", buffer);
-	} else {
-		Bun.write("albumArt.jpg", Buffer.from(noArtwork, "base64"));
+	if (playingData.playState === PlayState.Offline) {
+		playingData = notPlayingData;
+	}
+
+	if (!playingData.albumArt) {
 		playingData.albumArt = noArtwork;
 	}
 
