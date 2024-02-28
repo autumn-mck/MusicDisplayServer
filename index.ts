@@ -26,7 +26,7 @@ const noArtwork = await Bun.file("NoArtworkBase64.txt").text();
 
 Bun.serve({
     port: 3000,
-    async fetch(req) {
+    async fetch(req, server) {
         const url = new URL(req.url);
 
         if (url.pathname === "/now-playing" && req.method === "POST") {
@@ -47,10 +47,24 @@ Bun.serve({
             });
         }
 
+        if (url.pathname === "/now-playing-ws") {
+            if (server.upgrade(req)) return;
+            return new Response("Upgrade failed", { status: 500 });
+        }
+
         if (url.pathname === "/") return new Response(Bun.file("index.html"));
         if (url.pathname === "/musicDisplayComponent.js") return new Response(Bun.file("musicDisplayComponent.js"));
 
         return new Response();
+    },
+    websocket: {
+        open(ws) {
+            ws.send(JSON.stringify(lastPlayingData));
+            playingDataEmitter.on("update", (playingData: PlayingData) => {
+                ws.send(JSON.stringify(playingData));
+            });
+        },
+        message(ws, message) {}, // not used, just used one way
     },
 });
 

@@ -164,6 +164,10 @@ class MusicDisplay extends HTMLElement {
 </div>
 `;
 
+    webSocket;
+
+    lastMessage;
+
     constructor() {
         super();
 
@@ -178,19 +182,47 @@ class MusicDisplay extends HTMLElement {
     }
 
     connectedCallback() {
-        this.update();
-
         setInterval(() => {
-            this.update();
+            this.updateProgress();
         }, 1000);
+
+        // shouldn't be needed, but just in case
+        setInterval(() => {
+            this.fetchNowPlaying();
+        }, 10000);
+
+        this.webSocket = new WebSocket("ws://localhost:3000/now-playing-ws");
+
+        this.webSocket.onmessage = (event) => {
+            this.lastMessage = JSON.parse(event.data);
+            this.fullUpdate(this.lastMessage);
+        };
     }
 
-    async update() {
+    async updateProgress() {
+        // only #position needs to be updated
         let document = this.shadowRoot;
+        let playingData = this.lastMessage;
 
+        let currentPosition = playingData.positionMs;
+        if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
+        currentPosition = Math.min(currentPosition, playingData.durationMs);
+
+        let position = document.getElementById("position");
+        position.innerText = new Date(currentPosition).toISOString().substr(14, 5);
+    }
+
+    async fetchNowPlaying() {
         const response = await fetch("http://localhost:3000/now-playing");
         const playingData = await response.json();
-        console.log(playingData);
+        this.lastMessage = playingData;
+        this.fullUpdate(playingData);
+    }
+
+    async fullUpdate(playingData) {
+        if (playingData === undefined) return;
+
+        let document = this.shadowRoot;
 
         let albumArt = document.getElementById("albumArt");
         albumArt.src = `data:image/png;base64, ${playingData.albumArt}`;
