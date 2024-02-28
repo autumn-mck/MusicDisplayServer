@@ -89,4 +89,15 @@ function updateNowPlaying(playingData: PlayingData) {
 	playingDataEmitter.emit("update", playingData);
 }
 
+function guessWentSilentlyOffline() {
+	// if 10 seconds after end of current song and no new song, assume went offline
+	const timeSinceLastUpdate = Date.now() - lastPlayingData.timestamp;
+
+	if (timeSinceLastUpdate > lastPlayingData.durationMs + 10000) {
+		updateNowPlaying(notPlayingData);
+	}
+}
+
+setInterval(guessWentSilentlyOffline, 5000);
+
 console.log("Started!");
