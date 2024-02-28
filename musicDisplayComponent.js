@@ -1,5 +1,5 @@
 class MusicDisplay extends HTMLElement {
-    css = `
+	css = `
 #nowPlaying {
     display: flex;
     flex-direction: row;
@@ -138,7 +138,7 @@ class MusicDisplay extends HTMLElement {
 }
 `;
 
-    html = `
+	html = `
 <div id="nowPlaying">
     <div id="artContainer">
         <img id="albumArt"/>
@@ -164,123 +164,132 @@ class MusicDisplay extends HTMLElement {
 </div>
 `;
 
-    webSocket;
+	webSocket;
 
-    lastMessage;
+	lastMessage;
 
-    constructor() {
-        super();
+	constructor() {
+		super();
 
-        const shadow = this.attachShadow({ mode: "open" });
+		const shadow = this.attachShadow({ mode: "open" });
 
-        shadow.innerHTML = this.html;
+		shadow.innerHTML = this.html;
 
-        const styleSheet = new CSSStyleSheet();
-        styleSheet.replaceSync(this.css);
+		const styleSheet = new CSSStyleSheet();
+		styleSheet.replaceSync(this.css);
 
-        shadow.adoptedStyleSheets = [styleSheet];
-    }
+		shadow.adoptedStyleSheets = [styleSheet];
+	}
 
-    connectedCallback() {
-        setInterval(() => {
-            this.updateProgress();
-        }, 1000);
+	connectedCallback() {
+		setInterval(() => {
+			this.updateProgress();
+		}, 1000);
 
-        // shouldn't be needed, but just in case
-        setInterval(() => {
-            this.fetchNowPlaying();
-        }, 10000);
+		// shouldn't be needed, but just in case
+		setInterval(() => {
+			this.fetchNowPlaying();
+		}, 10000);
 
-        this.webSocket = new WebSocket("ws://localhost:3000/now-playing-ws");
+		this.connectWebSocket();
+	}
 
-        this.webSocket.onmessage = (event) => {
-            this.lastMessage = JSON.parse(event.data);
-            this.fullUpdate(this.lastMessage);
-        };
-    }
+	connectWebSocket() {
+		this.webSocket = new WebSocket("ws://localhost:3000/now-playing-ws");
 
-    async updateProgress() {
-        // only #position needs to be updated
-        let document = this.shadowRoot;
-        let playingData = this.lastMessage;
+		this.webSocket.onmessage = (event) => {
+			this.lastMessage = JSON.parse(event.data);
+			this.fullUpdate(this.lastMessage);
+		};
 
-        let currentPosition = playingData.positionMs;
-        if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
-        currentPosition = Math.min(currentPosition, playingData.durationMs);
+		// on socket close, try to reconnect
+		this.webSocket.onclose = () => {
+			setTimeout(() => {
+				this.connectWebSocket();
+			}, 1000);
+		};
+	}
 
-        let position = document.getElementById("position");
-        position.innerText = new Date(currentPosition).toISOString().substr(14, 5);
-    }
+	async updateProgress() {
+		// only #position needs to be updated
+		let document = this.shadowRoot;
+		let playingData = this.lastMessage;
 
-    async fetchNowPlaying() {
-        const response = await fetch("http://localhost:3000/now-playing");
-        const playingData = await response.json();
-        this.lastMessage = playingData;
-        this.fullUpdate(playingData);
-    }
+		let currentPosition = playingData.positionMs;
+		if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
+		currentPosition = Math.min(currentPosition, playingData.durationMs);
 
-    async fullUpdate(playingData) {
-        if (playingData === undefined) return;
+		let position = document.getElementById("position");
+		position.innerText = new Date(currentPosition).toISOString().substr(14, 5);
+	}
 
-        let document = this.shadowRoot;
+	async fetchNowPlaying() {
+		const response = await fetch("http://localhost:3000/now-playing");
+		const playingData = await response.json();
+		this.lastMessage = playingData;
+		this.fullUpdate(playingData);
+	}
 
-        let albumArt = document.getElementById("albumArt");
-        albumArt.src = `data:image/png;base64, ${playingData.albumArt}`;
+	async fullUpdate(playingData) {
+		if (playingData === undefined) return;
 
-        let songTitle = document.getElementById("songTitle");
-        songTitle.innerText = playingData.title;
+		let document = this.shadowRoot;
 
-        let artist = document.getElementById("artist");
-        artist.innerText = playingData.artist;
+		let albumArt = document.getElementById("albumArt");
+		albumArt.src = `data:image/png;base64, ${playingData.albumArt}`;
 
-        let album = document.getElementById("album");
-        if (playingData.album === null || playingData.album === "") {
-            album.innerText = "";
-        } else {
-            album.innerText = ` - ${playingData.album}`;
-        }
+		let songTitle = document.getElementById("songTitle");
+		songTitle.innerText = playingData.title;
 
-        let currentPosition = playingData.positionMs;
-        if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
+		let artist = document.getElementById("artist");
+		artist.innerText = playingData.artist;
 
-        if (playingData.playState === 1) {
-            albumArt.style.filter = "grayscale(70%)";
+		let album = document.getElementById("album");
+		if (playingData.album === null || playingData.album === "") {
+			album.innerText = "";
+		} else {
+			album.innerText = ` - ${playingData.album}`;
+		}
 
-            let pauseSymbol = document.getElementById("pauseSymbol");
-            pauseSymbol.style.display = "block";
-        } else {
-            albumArt.style.filter = "none";
+		let currentPosition = playingData.positionMs;
+		if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
 
-            let pauseSymbol = document.getElementById("pauseSymbol");
-            pauseSymbol.style.display = "none";
-        }
+		if (playingData.playState === 1) {
+			albumArt.style.filter = "grayscale(70%)";
 
-        let position = document.getElementById("position");
-        position.innerText = new Date(currentPosition).toISOString().substr(14, 5);
+			let pauseSymbol = document.getElementById("pauseSymbol");
+			pauseSymbol.style.display = "block";
+		} else {
+			albumArt.style.filter = "none";
 
-        let duration = document.getElementById("duration");
-        duration.innerText = new Date(playingData.durationMs).toISOString().substr(14, 5);
+			let pauseSymbol = document.getElementById("pauseSymbol");
+			pauseSymbol.style.display = "none";
+		}
 
-        let styledSeekBarFilled = document.getElementById("styledSeekBarFilled");
-        styledSeekBarFilled.style.width = `${(currentPosition / playingData.durationMs) * 100}%`;
-        styledSeekBarFilled.style.animation = "none";
+		let position = document.getElementById("position");
+		position.innerText = new Date(currentPosition).toISOString().substr(14, 5);
 
-        let styledSeekBarPositionMarker = document.getElementById("styledSeekBarPositionMarker");
-        styledSeekBarPositionMarker.style.left = `${(currentPosition / playingData.durationMs) * 100}%`;
-        styledSeekBarPositionMarker.style.animation = "none";
+		let duration = document.getElementById("duration");
+		duration.innerText = new Date(playingData.durationMs).toISOString().substr(14, 5);
 
-        setTimeout(() => {
-            styledSeekBarFilled.style.animation = `widen ${playingData.durationMs / 1000}s linear -${
-                currentPosition / 1000
-            }s forwards`;
-            styledSeekBarFilled.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
+		let styledSeekBarFilled = document.getElementById("styledSeekBarFilled");
+		styledSeekBarFilled.style.width = `${(currentPosition / playingData.durationMs) * 100}%`;
+		styledSeekBarFilled.style.animation = "none";
 
-            styledSeekBarPositionMarker.style.animation = `moveRight ${playingData.durationMs / 1000}s linear -${
-                currentPosition / 1000
-            }s forwards`;
-            styledSeekBarPositionMarker.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
-        }, 10);
-    }
+		let styledSeekBarPositionMarker = document.getElementById("styledSeekBarPositionMarker");
+		styledSeekBarPositionMarker.style.left = `${(currentPosition / playingData.durationMs) * 100}%`;
+		styledSeekBarPositionMarker.style.animation = "none";
+
+		setTimeout(() => {
+			styledSeekBarFilled.style.animation = `widen ${playingData.durationMs / 1000}s linear -${currentPosition / 1000}s forwards`;
+			styledSeekBarFilled.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
+
+			styledSeekBarPositionMarker.style.animation = `moveRight ${playingData.durationMs / 1000}s linear -${
+				currentPosition / 1000
+			}s forwards`;
+			styledSeekBarPositionMarker.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
+		}, 10);
+	}
 }
 
 customElements.define("music-display", MusicDisplay);
