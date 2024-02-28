@@ -21,6 +21,8 @@ playingDataEmitter.on("update", (playingData: PlayingData) => {
     });
 });
 
+const auth = `Basic ${process.env.POST_PUBLIC_MUSIC_API_TOKEN}`;
+
 // Read NoArtwork.png to base64 encode it
 const noArtwork = await Bun.file("NoArtworkBase64.txt").text();
 
@@ -30,7 +32,7 @@ Bun.serve({
         const url = new URL(req.url);
 
         if (url.pathname === "/now-playing" && req.method === "POST") {
-            // todo auth
+            if (req.headers.get("Authorization") !== auth) return new Response("Unauthorized", { status: 401 });
 
             const playingData = (await req.json()) as PlayingData;
             playingData.timestamp = Date.now();
