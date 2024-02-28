@@ -1,5 +1,5 @@
 class MusicDisplay extends HTMLElement {
-	css = `
+	css = /*css*/ `
 #nowPlaying {
     display: flex;
     flex-direction: row;
@@ -8,7 +8,6 @@ class MusicDisplay extends HTMLElement {
     background-color: var(--base);
     border: 1px solid var(--accent);
     border-radius: 5px;
-    gap: 1rem;
     width: 30rem;
 }
 
@@ -48,6 +47,8 @@ class MusicDisplay extends HTMLElement {
 
 #songInfo {
     width: 100%;
+    margin-left: 1rem;
+    margin-right: 0.2rem;
 }
 
 #songTitle {
@@ -138,7 +139,7 @@ class MusicDisplay extends HTMLElement {
 }
 `;
 
-	html = `
+	html = /*html*/ `
 <div id="nowPlaying">
     <div id="artContainer">
         <img id="albumArt"/>
