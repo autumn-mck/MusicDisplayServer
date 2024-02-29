@@ -1,131 +1,130 @@
 class MusicDisplay extends HTMLElement {
 	css = /*css*/ `
+:host {
+    --albumArtSize: 100px;
+    --seekbarPositionMarkerSize: 16px;
+    --border-radius: 8px;
+
+    --baseMDC: var(--base, #1e2030);
+    --textMDC: var(--text, #cad3f5);
+    --accentMDC: var(--accent, #ddb6f2);
+
+    color: var(--textMDC);
+}
+
 #nowPlaying {
     display: flex;
     flex-direction: row;
     align-items: center;
     padding: 0.8rem;
-    background-color: var(--base);
-    border: 1px solid var(--accent);
-    border-radius: 5px;
+    background-color: var(--baseMDC);
+    border: 1px solid var(--accentMDC);
+    border-radius: var(--border-radius);
     width: 30rem;
-}
-
-#albumArt {
-    width: 100px;
-    max-height: 100px;
-    border-radius: 5px;
+    gap: 0.8rem;
 }
 
 #artContainer {
     position: relative;
-    height: 100px;
-    width: 100px;
+    height: var(--albumArtSize);
+    width: var(--albumArtSize);
     display: flex;
     justify-content: center;
     align-items: center;
+
+    #pauseSymbol {
+        position: absolute;
+        left: 0;
+        filter: drop-shadow(5px 5px 2px var(--baseMDC));
+        display: none;
+    }
+
+    #albumArt {
+        width: var(--albumArtSize);
+        max-height: var(--albumArtSize);
+        border-radius: var(--border-radius);
+
+        &.paused {
+            filter: grayscale(70%) brightness(70%);
+        }
+    }
 }
 
-#pausedOverlay {
-    position: absolute;
-    top: 0;
+#info {
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 5px;
-    justify-content: center;
+
+    #songInfo {
+        display: block;
+
+        #songTitle {
+            font-weight: bold;
+        }
+    }
+
+    #artist {
+        display: block;
+    }
+}
+
+#progressInfo {
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    display: none;
-}
+    gap: 0.6rem;
+    margin-top: 1rem;
 
-#pauseSymbol {
-    position: absolute;
-    top: 0;
-    filter: drop-shadow(0 0 5px var(--base));
-    display: none;
-}
-
-#songInfo {
-    width: 100%;
-    margin-left: 1rem;
-    margin-right: 0.2rem;
-}
-
-#songTitle {
-    font-weight: bold;
-}
-
-#artist {
-    margin-top: 0.2rem;
-    display: block;
+    #durationContainer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.4rem;
+    }
 }
 
 #seekBarContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-#seekBar {
-    width: 100%;
-    pointer-events: none;
-    user-select: none;
-    display: none;
-}
-
-#durationContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-#styledSeekBarContainer {
     width: 100%;
     height: 1rem;
     display: flex;
     align-items: center;
     position: relative;
+
+    #seekBar {
+        width: 100%;
+        height: 6px;
+        background-color: var(--textMDC);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+
+        #seekBarFilled {
+            height: 100%;
+            background-color: var(--accentMDC);
+            width: 0;
+
+            animation: widen 999999s linear forwards;
+        }
+    }
+
+    #seekBarPositionMarker {
+        width: var(--seekbarPositionMarkerSize);
+        height: var(--seekbarPositionMarkerSize);
+        background-color: var(--baseMDC);
+        border-radius: 50%;
+        position: absolute;
+        left: 0;
+        border: 3px solid var(--accentMDC);
+        transform: translateX(-50%);
+
+        animation: moveRight 999999s linear forwards;
+    }
 }
 
-#styledSeekBar {
-    width: 100%;
-    height: 6px;
-    background-color: var(--text);
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-#styledSeekBarFilled {
-    height: 100%;
-    background-color: var(--accent);
-    width: 0;
-
-    animation: widen 999999s linear forwards;
-}
-
-#styledSeekBarPositionMarker {
-    width: 16px;
-    height: 16px;
-    background-color: var(--base);
-    border-radius: 50%;
-    position: absolute;
-    left: 0;
-    border: 3px solid var(--accent);
-    transform: translateX(-50%);
-
-    animation: moveRight 999999s linear forwards;
-}
-
-/* animations for styled seek bar */
+/* animation keyframes for seek bar */
 @keyframes moveRight {
     from {
-        left: 0;
+        left: calc(var(--seekbarPositionMarkerSize) / 2);
     }
     to {
-        left: 100%;
+        left: calc(100% - var(--seekbarPositionMarkerSize) / 2);
     }
 }
 
@@ -144,21 +143,25 @@ class MusicDisplay extends HTMLElement {
     <div id="artContainer">
         <img id="albumArt"/>
         <svg id="pauseSymbol" width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M30 20H40V80H30V20Z" fill="var(--text)"/>
-            <path d="M60 20H70V80H60V20Z" fill="var(--text)"/>
+            <rect x="30" y="20" width="10" height="60" fill="var(--textMDC)" rx="calc(var(--border-radius) / 2)"/>
+            <rect x="60" y="20" width="10" height="60" fill="var(--textMDC)" rx="calc(var(--border-radius) / 2)"/>
         </svg>
     </div>
-    <div id="songInfo">
-        <span id="songTitle"></span><span id="album"></span>
-        <br />
+    <div id="info">
+        <div id="songInfo">
+            <span id="songTitle"></span>
+            <span id="album"></span>
+        </div>
         <span id="artist"></span>
-        <div id="seekBarContainer">
-            <div id="durationContainer"><span id="position"></span> / <span id="duration"></span></div>
-            <div id="styledSeekBarContainer">
-                <div id="styledSeekBar">
-                    <div id="styledSeekBarFilled"></div>
+        <div id="progressInfo">
+            <div id="durationContainer">
+                <span id="position"></span> / <span id="duration"></span>
+            </div>
+            <div id="seekBarContainer">
+                <div id="seekBar">
+                    <div id="seekBarFilled"></div>
                 </div>
-                <div id="styledSeekBarPositionMarker"></div>
+                <div id="seekBarPositionMarker"></div>
             </div>
         </div>
     </div>
@@ -256,12 +259,12 @@ class MusicDisplay extends HTMLElement {
 		if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
 
 		if (playingData.playState === 1) {
-			albumArt.style.filter = "grayscale(70%)";
+			albumArt.classList.add("paused");
 
 			let pauseSymbol = document.getElementById("pauseSymbol");
 			pauseSymbol.style.display = "block";
 		} else {
-			albumArt.style.filter = "none";
+			albumArt.classList.remove("paused");
 
 			let pauseSymbol = document.getElementById("pauseSymbol");
 			pauseSymbol.style.display = "none";
@@ -273,23 +276,28 @@ class MusicDisplay extends HTMLElement {
 		let duration = document.getElementById("duration");
 		duration.innerText = new Date(playingData.durationMs).toISOString().substr(14, 5);
 
-		let styledSeekBarFilled = document.getElementById("styledSeekBarFilled");
-		styledSeekBarFilled.style.width = `${(currentPosition / playingData.durationMs) * 100}%`;
-		styledSeekBarFilled.style.animation = "none";
+		let percentComplete = currentPosition / playingData.durationMs;
 
-		let styledSeekBarPositionMarker = document.getElementById("styledSeekBarPositionMarker");
-		styledSeekBarPositionMarker.style.left = `${(currentPosition / playingData.durationMs) * 100}%`;
-		styledSeekBarPositionMarker.style.animation = "none";
+		let seekBarFilled = document.getElementById("seekBarFilled");
+		seekBarFilled.style.width = `${percentComplete * 100}%`;
+		seekBarFilled.style.animation = "none";
+
+		let seekBarPositionMarker = document.getElementById("seekBarPositionMarker");
+		seekBarPositionMarker.style.left = `calc(${
+			percentComplete * 100
+		}% + var(--seekbarPositionMarkerSize) / 2 - ${percentComplete} * var(--seekbarPositionMarkerSize))`;
+
+		seekBarPositionMarker.style.animation = "none";
 
 		setTimeout(() => {
-			styledSeekBarFilled.style.animation = `widen ${playingData.durationMs / 1000}s linear -${currentPosition / 1000}s forwards`;
-			styledSeekBarFilled.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
+			seekBarFilled.style.animation = `widen ${playingData.durationMs / 1000}s linear -${currentPosition / 1000}s forwards`;
+			seekBarFilled.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
 
-			styledSeekBarPositionMarker.style.animation = `moveRight ${playingData.durationMs / 1000}s linear -${
+			seekBarPositionMarker.style.animation = `moveRight ${playingData.durationMs / 1000}s linear -${
 				currentPosition / 1000
 			}s forwards`;
-			styledSeekBarPositionMarker.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
-		}, 10);
+			seekBarPositionMarker.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
+		}, 100);
 	}
 }
 
