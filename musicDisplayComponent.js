@@ -10,6 +10,13 @@ class MusicDisplay extends HTMLElement {
     --accentMDC: var(--accent, #ddb6f2);
 
     color: var(--textMDC);
+
+    max-width: 30rem;
+    width: 100%;
+    display: flex;
+
+    container-type: inline-size;
+    container-name: musicDisplay;
 }
 
 #nowPlaying {
@@ -20,8 +27,8 @@ class MusicDisplay extends HTMLElement {
     background-color: var(--baseMDC);
     border: 1px solid var(--accentMDC);
     border-radius: var(--border-radius);
-    width: 30rem;
     gap: 0.8rem;
+    width: 100%;
 }
 
 #artContainer {
@@ -115,6 +122,13 @@ class MusicDisplay extends HTMLElement {
         transform: translateX(-50%);
 
         animation: moveRight 999999s linear forwards;
+    }
+}
+
+@container (max-width: 29rem) {
+    #progressInfo {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 
