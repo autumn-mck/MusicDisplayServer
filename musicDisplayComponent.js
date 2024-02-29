@@ -20,24 +20,28 @@ class MusicDisplay extends HTMLElement {
 }
 
 #nowPlaying {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+    display: grid;
+    grid-template-columns: var(--albumArtSize) 1fr;
+    grid-template-rows: min-content min-content;
+    gap: 0.8rem;
+
     padding: 0.8rem;
     background-color: var(--baseMDC);
     border: 1px solid var(--accentMDC);
     border-radius: var(--border-radius);
-    gap: 0.8rem;
     width: 100%;
 }
 
 #artContainer {
     position: relative;
-    height: var(--albumArtSize);
+    height: 100%;
     width: var(--albumArtSize);
     display: flex;
     justify-content: center;
     align-items: center;
+
+    grid-row: 1 / 3;
+    grid-column: 1;
 
     #pauseSymbol {
         position: absolute;
@@ -60,6 +64,9 @@ class MusicDisplay extends HTMLElement {
 #info {
     width: 100%;
 
+    grid-row: 1;
+    grid-column: 2;
+
     #songInfo {
         display: block;
 
@@ -78,7 +85,9 @@ class MusicDisplay extends HTMLElement {
     flex-direction: row;
     align-items: center;
     gap: 0.6rem;
-    margin-top: 1rem;
+
+    grid-row: 2;
+    grid-column: 2;
 
     #durationContainer {
         display: flex;
@@ -127,20 +136,20 @@ class MusicDisplay extends HTMLElement {
 
 @container musicDisplay (max-width: 28rem) {
     #nowPlaying {
-        padding: 0.5rem;
-    }
-
-    #artContainer {
         --albumArtSize: 80px;
-    }
-
-    #progressInfo {
-        flex-direction: column;
+        --seekbarPositionMarkerSize: 14px;
+        row-gap: 0.5rem;
+        padding: 0.5rem;
         align-items: flex-start;
     }
 
-    #seekBarContainer {
-        --seekbarPositionMarkerSize: 14px;
+    #artContainer {
+
+        grid-row: 1;
+    }
+
+    #progressInfo {
+        grid-column: 1 / 3;
     }
 }
 
@@ -179,16 +188,16 @@ class MusicDisplay extends HTMLElement {
             <span id="album"></span>
         </div>
         <span id="artist"></span>
-        <div id="progressInfo">
-            <div id="durationContainer">
-                <span id="position"></span> / <span id="duration"></span>
+    </div>
+    <div id="progressInfo">
+        <div id="durationContainer">
+            <span id="position"></span> / <span id="duration"></span>
+        </div>
+        <div id="seekBarContainer">
+            <div id="seekBar">
+                <div id="seekBarFilled"></div>
             </div>
-            <div id="seekBarContainer">
-                <div id="seekBar">
-                    <div id="seekBarFilled"></div>
-                </div>
-                <div id="seekBarPositionMarker"></div>
-            </div>
+            <div id="seekBarPositionMarker"></div>
         </div>
     </div>
 </div>
