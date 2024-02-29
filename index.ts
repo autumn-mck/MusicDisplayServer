@@ -51,6 +51,7 @@ Bun.serve({
 			return new Response(JSON.stringify(lastPlayingData), {
 				headers: {
 					"Content-Type": "application/json",
+					"Access-Control-Allow-Origin": "*",
 				},
 			});
 		}
