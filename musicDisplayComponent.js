@@ -16,6 +16,7 @@ class MusicDisplay extends HTMLElement {
     max-width: 30rem;
     width: 100%;
     display: flex;
+    margin: 0 auto;
 
     container-type: inline-size;
     container-name: musicDisplay;
@@ -37,6 +38,7 @@ class MusicDisplay extends HTMLElement {
 #artContainer {
     position: relative;
     height: 100%;
+    min-height: var(--albumArtSize);
     width: var(--albumArtSize);
     display: flex;
     justify-content: center;
@@ -56,8 +58,14 @@ class MusicDisplay extends HTMLElement {
         width: var(--albumArtSize);
         max-height: var(--albumArtSize);
         border-radius: var(--border-radius);
+    }
 
-        &.paused {
+    &.paused {
+        #pauseSymbol {
+            display: block;
+        }
+
+        #albumArt {
             filter: grayscale(70%) brightness(70%);
         }
     }
@@ -146,7 +154,6 @@ class MusicDisplay extends HTMLElement {
     }
 
     #artContainer {
-
         grid-row: 1;
     }
 
@@ -295,17 +302,8 @@ class MusicDisplay extends HTMLElement {
 		let currentPosition = playingData.positionMs;
 		if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
 
-		if (playingData.playState === 1) {
-			albumArt.classList.add("paused");
-
-			let pauseSymbol = document.getElementById("pauseSymbol");
-			pauseSymbol.style.display = "block";
-		} else {
-			albumArt.classList.remove("paused");
-
-			let pauseSymbol = document.getElementById("pauseSymbol");
-			pauseSymbol.style.display = "none";
-		}
+		let artContainer = document.getElementById("artContainer");
+		artContainer.classList.toggle("paused", playingData.playState === 1);
 
 		let position = document.getElementById("position");
 		position.innerText = new Date(currentPosition).toISOString().substr(14, 5);
@@ -338,4 +336,4 @@ class MusicDisplay extends HTMLElement {
 	}
 }
 
-customElements.define("music-display", MusicDisplay);
+if (!customElements.get("music-display")) customElements.define("music-display", MusicDisplay);
