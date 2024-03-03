@@ -1,3 +1,5 @@
+"use strict";
+
 class MusicDisplay extends HTMLElement {
 	css = /*css*/ `
 :host {
