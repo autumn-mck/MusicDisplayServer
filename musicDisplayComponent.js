@@ -281,6 +281,11 @@ class MusicDisplay extends HTMLElement {
 	async fullUpdate(playingData) {
 		if (playingData === undefined) return;
 
+		if (playingData.durationMs === 0) {
+			playingData.durationMs = 1;
+			playingData.positionMs = 0.33;
+		}
+
 		let document = this.shadowRoot;
 
 		let albumArt = document.getElementById("albumArt");
