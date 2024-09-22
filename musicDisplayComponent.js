@@ -187,8 +187,8 @@ class MusicDisplay extends HTMLElement {
     <div id="artContainer" aria-hidden="true">
         <img id="albumArt"/>
         <svg id="pauseSymbol" width="var(--albumArtSize)" height="var(--albumArtSize)" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="30" y="20" width="10" height="60" fill="var(--textMDC)" rx="calc(var(--border-radius) / 2)"/>
-            <rect x="60" y="20" width="10" height="60" fill="var(--textMDC)" rx="calc(var(--border-radius) / 2)"/>
+            <rect x="30" y="20" width="10" height="60" fill="var(--textMDC)" /> <!-- rx="calc(var(--border-radius) / 2)" when chrome supports it -->
+            <rect x="60" y="20" width="10" height="60" fill="var(--textMDC)" />
         </svg>
     </div>
     <div id="info">
