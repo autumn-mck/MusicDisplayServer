@@ -184,7 +184,7 @@ class MusicDisplay extends HTMLElement {
 
 	html = /*html*/ `
 <div id="nowPlaying">
-    <div id="artContainer">
+    <div id="artContainer" aria-hidden="true">
         <img id="albumArt"/>
         <svg id="pauseSymbol" width="var(--albumArtSize)" height="var(--albumArtSize)" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="30" y="20" width="10" height="60" fill="var(--textMDC)" rx="calc(var(--border-radius) / 2)"/>
@@ -264,7 +264,8 @@ class MusicDisplay extends HTMLElement {
 		let playingData = this.lastMessage;
 
 		let currentPosition = playingData.positionMs;
-		if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
+		if (playingData.playState === 0)
+			currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
 		currentPosition = Math.min(currentPosition, playingData.durationMs);
 
 		let position = document.getElementById("position");
@@ -305,7 +306,8 @@ class MusicDisplay extends HTMLElement {
 		}
 
 		let currentPosition = playingData.positionMs;
-		if (playingData.playState === 0) currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
+		if (playingData.playState === 0)
+			currentPosition = Date.now() - playingData.timestamp + playingData.positionMs;
 
 		let artContainer = document.getElementById("artContainer");
 		artContainer.classList.toggle("paused", playingData.playState === 1);
@@ -330,13 +332,16 @@ class MusicDisplay extends HTMLElement {
 		seekBarPositionMarker.style.animation = "none";
 
 		setTimeout(() => {
-			seekBarFilled.style.animation = `widen ${playingData.durationMs / 1000}s linear -${currentPosition / 1000}s forwards`;
-			seekBarFilled.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
-
-			seekBarPositionMarker.style.animation = `moveRight ${playingData.durationMs / 1000}s linear -${
+			seekBarFilled.style.animation = `widen ${playingData.durationMs / 1000}s linear -${
 				currentPosition / 1000
 			}s forwards`;
-			seekBarPositionMarker.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
+			seekBarFilled.style.animationPlayState = playingData.playState === 0 ? "running" : "paused";
+
+			seekBarPositionMarker.style.animation = `moveRight ${
+				playingData.durationMs / 1000
+			}s linear -${currentPosition / 1000}s forwards`;
+			seekBarPositionMarker.style.animationPlayState =
+				playingData.playState === 0 ? "running" : "paused";
 		}, 100);
 	}
 }
