@@ -86,6 +86,20 @@ function updateNowPlaying(playingData: PlayingData) {
 		playingData.albumArt = noArtwork;
 	}
 
+	const artistsToHideAlbumArt = config.hiddenAlbumArt.artists;
+	const artistName = playingData.artist.toLowerCase();
+
+	if (artistsToHideAlbumArt.includes(artistName)) {
+		playingData.albumArt = noArtwork;
+	}
+
+	const albumsToHideAlbumArt = config.hiddenAlbumArt.albums;
+	const albumName = playingData.album.toLowerCase();
+
+	if (albumsToHideAlbumArt.includes(albumName)) {
+		playingData.albumArt = noArtwork;
+	}
+
 	lastPlayingData = playingData;
 	playingDataEmitter.emit("update", playingData);
 }
