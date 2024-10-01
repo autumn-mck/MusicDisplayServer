@@ -1,11 +1,14 @@
 {
-  "name": "postpublicmusicreceiver",
-  "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  }
+	"name": "postpublicmusicreceiver",
+	"module": "index.ts",
+	"type": "module",
+	"devDependencies": {
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"scripts": {
+		"dev": "bun index.ts"
+	}
 }
