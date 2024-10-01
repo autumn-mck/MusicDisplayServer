@@ -1,3 +1,7 @@
 {
-	"authToken": "YOUR_API_TOKEN"
+	"authToken": "YOUR_API_TOKEN",
+	"hiddenAlbumArt": {
+		"albums": [],
+		"artists": ["artist 1", "artist 2"]
+	}
 }
