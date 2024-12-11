@@ -9,7 +9,7 @@ class MusicDisplay extends HTMLElement {
 
 	--baseMDC: var(--base, #1e2030);
 	--textMDC: var(--text, #cad3f5);
-	--accentMDC: var(--accent, #ddb6f2);
+	--accentMDC: var(--accent, #c6a0f6);
 
 	color: var(--textMDC);
 
@@ -212,6 +212,58 @@ class MusicDisplay extends HTMLElement {
 </div>
 `;
 
+	noArtwork = /*html*/ `<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   width="400"
+   height="400"
+   viewBox="0 0 105.83333 105.83333"
+   version="1.1"
+   id="svg5"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+    <rect
+       style="fill:#24273a;stroke-width:0.132291"
+       id="rect55"
+       width="105.83333"
+       height="105.83333"
+       x="0"
+       y="0" />
+    <circle
+       style="fill:#494d64;stroke-width:0.066146"
+       id="path163"
+       cx="52.916668"
+       cy="52.916668"
+       r="38.232292" />
+    <circle
+       style="fill:#c6a0f6;stroke-width:0.191042"
+       id="path1289"
+       cx="52.916668"
+       cy="52.916668"
+       r="35.189583" />
+    <circle
+       style="fill:#494d64;stroke-width:0.026321"
+       id="circle1394"
+       cx="52.916668"
+       cy="52.916668"
+       r="15.213541" />
+    <circle
+       style="fill:#1e2030;stroke-width:0.188746"
+       id="path4405"
+       cx="52.916668"
+       cy="52.916668"
+       r="12.170834" />
+    <circle
+       style="fill:#494d64;stroke-width:0.118374;"
+       id="path4774"
+       cx="52.916668"
+       cy="52.916668"
+       r="2.9104166" />
+</svg>
+`;
+
 	/**
 	 * @type {WebSocket}
 	 */
@@ -303,7 +355,8 @@ class MusicDisplay extends HTMLElement {
 		let document = this.shadowRoot;
 
 		let albumArt = document.getElementById("albumArt");
-		albumArt.src = `data:image/png;base64, ${playingData.albumArt}`;
+		if (playingData.albumArt) albumArt.src = `data:image/png;base64, ${playingData.albumArt}`;
+		else albumArt.src = `data:image/svg+xml;base64, ${btoa(this.noArtwork)}`;
 
 		let songTitle = document.getElementById("songTitle");
 		songTitle.innerText = playingData.title;
