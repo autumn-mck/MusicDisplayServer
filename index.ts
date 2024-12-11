@@ -60,7 +60,12 @@ Bun.serve({
 
 		if (url.pathname === "/") return new Response(Bun.file("index.html"));
 		if (url.pathname === "/musicDisplayComponent.js")
-			return new Response(Bun.file("musicDisplayComponent.js"));
+			return new Response(Bun.file("musicDisplayComponent.js"), {
+				headers: {
+					"Content-Type": "application/javascript",
+					"Cache-Control": "public, max-age=86400",
+				},
+			});
 
 		return new Response();
 	},
