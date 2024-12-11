@@ -3,217 +3,227 @@
 class MusicDisplay extends HTMLElement {
 	css = /*css*/ `
 :host {
-    --albumArtSize: 100px;
-    --seekbarPositionMarkerSize: 16px;
-    --border-radius: 8px;
+	--albumArtSize: 100px;
+	--seekbarPositionMarkerSize: 16px;
+	--border-radius: 8px;
 
-    --baseMDC: var(--base, #1e2030);
-    --textMDC: var(--text, #cad3f5);
-    --accentMDC: var(--accent, #ddb6f2);
+	--baseMDC: var(--base, #1e2030);
+	--textMDC: var(--text, #cad3f5);
+	--accentMDC: var(--accent, #ddb6f2);
 
-    color: var(--textMDC);
+	color: var(--textMDC);
 
-    max-width: 30rem;
-    width: 100%;
-    display: flex;
-    margin: 0 auto;
+	max-width: 30rem;
+	width: 100%;
+	display: flex;
+	margin: 0 auto;
 
-    container-type: inline-size;
-    container-name: musicDisplay;
+	container-type: inline-size;
+	container-name: musicDisplay;
 }
 
 #nowPlaying {
-    display: grid;
-    grid-template-columns: var(--albumArtSize) 1fr;
-    grid-template-rows: min-content min-content;
-    gap: 0.8rem;
+	display: grid;
+	grid-template-columns: var(--albumArtSize) 1fr;
+	grid-template-rows: min-content min-content;
+	gap: 0.8rem;
 
-    padding: 0.8rem;
-    background-color: var(--baseMDC);
-    border: 1px solid var(--accentMDC);
-    border-radius: var(--border-radius);
-    width: 100%;
+	padding: 0.8rem;
+	background-color: var(--baseMDC);
+	border: 1px solid var(--accentMDC);
+	border-radius: var(--border-radius);
+	width: 100%;
 }
 
 #artContainer {
-    position: relative;
-    height: 100%;
-    min-height: var(--albumArtSize);
-    width: var(--albumArtSize);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	position: relative;
+	height: 100%;
+	min-height: var(--albumArtSize);
+	width: var(--albumArtSize);
+	display: flex;
+	justify-content: center;
+	align-items: center;
 
-    grid-row: 1 / 3;
-    grid-column: 1;
+	grid-row: 1 / 3;
+	grid-column: 1;
 
-    #pauseSymbol {
-        position: absolute;
-        left: 0;
-        filter: drop-shadow(5px 5px 2px var(--baseMDC));
-        display: none;
-    }
+	#pauseSymbol {
+		position: absolute;
+		left: 0;
+		filter: drop-shadow(5px 5px 2px var(--baseMDC));
+		display: none;
+	}
 
-    #albumArt {
-        width: var(--albumArtSize);
-        max-height: var(--albumArtSize);
-        border-radius: var(--border-radius);
-    }
+	#albumArt {
+		width: var(--albumArtSize);
+		max-height: var(--albumArtSize);
+		border-radius: var(--border-radius);
+	}
 
-    &.paused {
-        #pauseSymbol {
-            display: block;
-        }
+	&.paused {
+		#pauseSymbol {
+			display: block;
+		}
 
-        #albumArt {
-            filter: grayscale(70%) brightness(70%);
-        }
-    }
+		#albumArt {
+			filter: grayscale(70%) brightness(70%);
+		}
+	}
 }
 
 #info {
-    width: 100%;
+	width: 100%;
 
-    grid-row: 1;
-    grid-column: 2;
+	grid-row: 1;
+	grid-column: 2;
 
-    #songInfo {
-        display: block;
+	#songInfo {
+		display: block;
 
-        #songTitle {
-            font-weight: bold;
-        }
-    }
+		#songTitle {
+			font-weight: bold;
+		}
+	}
 
-    #artist {
-        display: block;
-    }
+	#artist {
+		display: block;
+	}
 }
 
 #progressInfo {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.6rem;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.6rem;
 
-    grid-row: 2;
-    grid-column: 2;
+	grid-row: 2;
+	grid-column: 2;
 
-    #durationContainer {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 0.4rem;
-    }
+	#durationContainer {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 0.4rem;
+	}
 }
 
 #seekBarContainer {
-    width: 100%;
-    height: 1rem;
-    display: flex;
-    align-items: center;
-    position: relative;
+	width: 100%;
+	height: 1rem;
+	display: flex;
+	align-items: center;
+	position: relative;
 
-    #seekBar {
-        width: 100%;
-        height: 6px;
-        background-color: var(--textMDC);
-        border-radius: var(--border-radius);
-        overflow: hidden;
+	#seekBar {
+		width: 100%;
+		height: 6px;
+		background-color: var(--textMDC);
+		border-radius: var(--border-radius);
+		overflow: hidden;
 
-        #seekBarFilled {
-            height: 100%;
-            background-color: var(--accentMDC);
-            width: 0;
+		#seekBarFilled {
+			height: 100%;
+			background-color: var(--accentMDC);
+			width: 0;
 
-            animation: widen 999999s linear forwards;
-        }
-    }
+			animation: widen 999999s linear forwards;
+		}
+	}
 
-    #seekBarPositionMarker {
-        width: var(--seekbarPositionMarkerSize);
-        height: var(--seekbarPositionMarkerSize);
-        background-color: var(--baseMDC);
-        border-radius: 50%;
-        position: absolute;
-        left: 0;
-        border: 3px solid var(--accentMDC);
-        transform: translateX(-50%);
+	#seekBarPositionMarker {
+		width: var(--seekbarPositionMarkerSize);
+		height: var(--seekbarPositionMarkerSize);
+		background-color: var(--baseMDC);
+		border-radius: 50%;
+		position: absolute;
+		left: 0;
+		border: 3px solid var(--accentMDC);
+		transform: translateX(-50%);
 
-        animation: moveRight 999999s linear forwards;
-    }
+		animation: moveRight 999999s linear forwards;
+	}
 }
 
 @container musicDisplay (max-width: 28rem) {
-    #nowPlaying {
-        --albumArtSize: 80px;
-        --seekbarPositionMarkerSize: 14px;
-        row-gap: 0.5rem;
-        padding: 0.5rem;
-        align-items: flex-start;
-    }
+	#nowPlaying {
+		--albumArtSize: 80px;
+		--seekbarPositionMarkerSize: 14px;
+		row-gap: 0.5rem;
+		padding: 0.5rem;
+		align-items: flex-start;
+	}
 
-    #artContainer {
-        grid-row: 1;
-    }
+	#artContainer {
+		grid-row: 1;
+	}
 
-    #progressInfo {
-        grid-column: 1 / 3;
-    }
+	#progressInfo {
+		grid-column: 1 / 3;
+	}
 }
 
 /* animation keyframes for seek bar */
 @keyframes moveRight {
-    from {
-        left: calc(var(--seekbarPositionMarkerSize) / 2);
-    }
-    to {
-        left: calc(100% - var(--seekbarPositionMarkerSize) / 2);
-    }
+	from {
+		left: calc(var(--seekbarPositionMarkerSize) / 2);
+	}
+	to {
+		left: calc(100% - var(--seekbarPositionMarkerSize) / 2);
+	}
 }
 
 @keyframes widen {
-    from {
-        width: 0;
-    }
-    to {
-        width: 100%;
-    }
+	from {
+		width: 0;
+	}
+	to {
+		width: 100%;
+	}
 }
 `;
 
 	html = /*html*/ `
 <div id="nowPlaying">
-    <div id="artContainer" aria-hidden="true">
-        <img id="albumArt"/>
-        <svg id="pauseSymbol" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="30" y="20" width="10" height="60" fill="var(--textMDC)" /> <!-- rx="calc(var(--border-radius) / 2)" when chrome supports it -->
-            <rect x="60" y="20" width="10" height="60" fill="var(--textMDC)" />
-        </svg>
-    </div>
-    <div id="info">
-        <div id="songInfo">
-            <span id="songTitle"></span>
-            <span id="album"></span>
-        </div>
-        <span id="artist"></span>
-    </div>
-    <div id="progressInfo">
-        <div id="durationContainer">
-            <span id="position"></span> / <span id="duration"></span>
-        </div>
-        <div id="seekBarContainer">
-            <div id="seekBar">
-                <div id="seekBarFilled"></div>
-            </div>
-            <div id="seekBarPositionMarker"></div>
-        </div>
-    </div>
+	<div id="artContainer" aria-hidden="true">
+		<img id="albumArt"/>
+		<svg id="pauseSymbol" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<rect x="30" y="20" width="10" height="60" fill="var(--textMDC)" /> <!-- rx="calc(var(--border-radius) / 2)" when chrome supports it -->
+			<rect x="60" y="20" width="10" height="60" fill="var(--textMDC)" />
+		</svg>
+	</div>
+	<div id="info">
+		<div id="songInfo">
+			<span id="songTitle"></span>
+			<span id="album"></span>
+		</div>
+		<span id="artist"></span>
+	</div>
+	<div id="progressInfo">
+		<div id="durationContainer">
+			<span id="position"></span> / <span id="duration"></span>
+		</div>
+		<div id="seekBarContainer">
+			<div id="seekBar">
+				<div id="seekBarFilled"></div>
+			</div>
+			<div id="seekBarPositionMarker"></div>
+		</div>
+	</div>
 </div>
 `;
 
+	/**
+	 * @type {WebSocket}
+	 */
 	webSocket;
 
+	/**
+	 * @typedef {import("./playingData.ts").PlayingData} PlayingData
+	 */
+
+	/**
+	 * @type {PlayingData}
+	 */
 	lastMessage;
 
 	constructor() {
@@ -269,7 +279,7 @@ class MusicDisplay extends HTMLElement {
 		currentPosition = Math.min(currentPosition, playingData.durationMs);
 
 		let position = document.getElementById("position");
-		position.innerText = new Date(currentPosition).toISOString().substr(14, 5);
+		position.innerText = new Date(currentPosition).toISOString().slice(14, 19);
 	}
 
 	async fetchNowPlaying() {
@@ -279,6 +289,9 @@ class MusicDisplay extends HTMLElement {
 		this.fullUpdate(playingData);
 	}
 
+	/**
+	 * @param {PlayingData} playingData
+	 */
 	async fullUpdate(playingData) {
 		if (playingData === undefined) return;
 
