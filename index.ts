@@ -16,9 +16,6 @@ playingDataEmitter.on("update", (playingData: PlayingData) => {
 
 const auth = `Basic ${config.authToken}`;
 
-// Read NoArtwork.png to base64 encode it
-const noArtwork = await Bun.file("NoArtworkBase64.txt").text();
-
 const notPlayingData: PlayingData = {
 	title: "Currently offline",
 	artist: "",
@@ -27,7 +24,6 @@ const notPlayingData: PlayingData = {
 	positionMs: 0,
 	playState: PlayState.Offline,
 	timestamp: Date.now(),
-	albumArt: noArtwork,
 };
 
 let lastPlayingData: PlayingData = notPlayingData;
@@ -85,21 +81,21 @@ function updateNowPlaying(playingData: PlayingData) {
 	}
 
 	if (!playingData.albumArt) {
-		playingData.albumArt = noArtwork;
+		playingData.albumArt = undefined;
 	}
 
 	const artistsToHideAlbumArt = config.hiddenAlbumArt.artists;
 	const artistName = playingData.artist.toLowerCase();
 
 	if (artistsToHideAlbumArt.includes(artistName)) {
-		playingData.albumArt = noArtwork;
+		playingData.albumArt = undefined;
 	}
 
 	const albumsToHideAlbumArt = config.hiddenAlbumArt.albums;
 	const albumName = playingData.album.toLowerCase();
 
 	if (albumsToHideAlbumArt.includes(albumName)) {
-		playingData.albumArt = noArtwork;
+		playingData.albumArt = undefined;
 	}
 
 	lastPlayingData = playingData;
