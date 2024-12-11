@@ -193,14 +193,14 @@ class MusicDisplay extends HTMLElement {
 	</div>
 	<div id="info">
 		<div id="songInfo">
-			<span id="songTitle"></span>
+			<span id="songTitle">Currently offline</span>
 			<span id="album"></span>
 		</div>
 		<span id="artist"></span>
 	</div>
 	<div id="progressInfo">
 		<div id="durationContainer">
-			<span id="position"></span> / <span id="duration"></span>
+			<span id="position">00:00</span> / <span id="duration">00:00</span>
 		</div>
 		<div id="seekBarContainer">
 			<div id="seekBar">
