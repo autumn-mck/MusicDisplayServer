@@ -38,7 +38,8 @@ Bun.serve({
 		const url = new URL(req.url);
 
 		if (url.pathname === "/now-playing" && req.method === "POST") {
-			if (req.headers.get("Authorization") !== auth) return new Response("Unauthorized", { status: 401 });
+			if (req.headers.get("Authorization") !== auth)
+				return new Response("Unauthorized", { status: 401 });
 
 			const playingData = (await req.json()) as PlayingData;
 			playingData.timestamp = Date.now();
@@ -62,7 +63,8 @@ Bun.serve({
 		}
 
 		if (url.pathname === "/") return new Response(Bun.file("index.html"));
-		if (url.pathname === "/musicDisplayComponent.js") return new Response(Bun.file("musicDisplayComponent.js"));
+		if (url.pathname === "/musicDisplayComponent.js")
+			return new Response(Bun.file("musicDisplayComponent.js"));
 
 		return new Response();
 	},
