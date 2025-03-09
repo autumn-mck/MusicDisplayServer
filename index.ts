@@ -90,14 +90,19 @@ function updateNowPlaying(playingData: PlayingData) {
 	}
 
 	const artistsToHideAlbumArt = config.hiddenAlbumArt.artists;
-	const artistName = playingData.artist.toLowerCase();
+	const artistName = playingData.artist;
 
 	if (artistsToHideAlbumArt.includes(artistName)) {
 		playingData.albumArt = undefined;
 	}
 
 	const albumsToHideAlbumArt = config.hiddenAlbumArt.albums;
-	const albumName = playingData.album.toLowerCase();
+	const albumName = playingData.album;
+	const trackName = playingData.title;
+
+	if (albumName === `${trackName} - Single`) {
+		playingData.album = "";
+	}
 
 	if (albumsToHideAlbumArt.includes(albumName)) {
 		playingData.albumArt = undefined;
